@@ -92,10 +92,10 @@
         .system-point {
             position: absolute;
             width: 1.5px;
-            height: 1px;
+            height: 1.5px;
             border-radius: 50%;
             background: rgba(0, 255, 255, 0.8);
-            border: .1px solid #00FFFF;
+            border: 1px solid #00FFFF;
             cursor: pointer;
             transform: translate(-50%, -50%);
             z-index: 100;
@@ -129,9 +129,12 @@
     <div id="container">
         <div id="map-container">
             <img id="map-image" src="https://i.imgur.com/2kU1PB8.jpeg" alt="Galactic Map" draggable="false">
-            
-            <!-- Udvaris clickable point - now inside map container -->
-            <div class="system-point" style="left: 58.153%; top: 64.6%;" onclick="showUdvarisInfo(event)"></div>
+
+            <!-- Udvaris clickable point - positioned by JavaScript -->
+            <div class="system-point" id="udvaris-point" onclick="showUdvarisInfo(event)"></div>
+
+            <!-- Enox clickable point - positioned by JavaScript -->
+            <div class="system-point" id="enox-point" onclick="showEnoxInfo(event)"></div>
         </div>
         
         <!-- Udvaris info popup - stays outside so it doesn't transform -->
@@ -140,6 +143,14 @@
             <p><strong>Capital of the Artemis Coalition</strong></p>
             <p>For over two centuries, the Udvaris system has stood as a seat of galactic power. Originally colonized during the Aegis Empire's (AGI) exodus from Sol in 3023.</p>
             <p>After the Aegis Empire fell during the Aegis Schism (3223-3243) the newly formed Artemis Coalition (ARC) reclaimed Udvaris as its capital due to its established infrastructure, strategic location, and symbolic importance.</p>
+        </div>
+
+        <!-- Enox info popup -->
+        <div class="info-popup" id="enox-info">
+            <h3>Enox System</h3>
+            <p><strong>Stronghold System</strong></p>
+            <p>Enox has always been a subject of intense combat, from the Aegis Empire's many battles with the Royal Air Mecenary Clan, to the so-called "Imperium of Man" during the Artemis Coalition's Librae Conflict</p>
+            <p>Now, Enox is a Stronghold System. With plentiful Military Patrols, Enox is slowly growing more stable. Enox used to be called Epsilon-Hydromi </p>
         </div>
         
         <div class="controls">
@@ -152,6 +163,7 @@
     <script>
         const container = document.getElementById('container');
         const mapContainer = document.getElementById('map-container');
+        const mapImage = document.getElementById('map-image');
         
         let currentZoom = 1;
         let isDragging = false;
@@ -161,15 +173,45 @@
         let translateY = 0;
         
         const minZoom = 0.5;
-        const maxZoom = 5;
+        const maxZoom = 8;
+
+        // System coordinates (as percentages of image dimensions)
+        const systems = {
+            udvaris: { x: 0.6575, y: 0.6465 },
+            enox: { x: 0.6415, y: 0.6430 }
+        };
+
+        function positionDots() {
+            const containerRect = mapContainer.getBoundingClientRect();
+            const imgAspect = mapImage.naturalWidth / mapImage.naturalHeight;
+            const containerAspect = containerRect.width / containerRect.height;
+
+            let renderedWidth, renderedHeight, offsetX, offsetY;
+            if (imgAspect > containerAspect) {
+                renderedWidth = containerRect.width;
+                renderedHeight = containerRect.width / imgAspect;
+                offsetX = 0;
+                offsetY = (containerRect.height - renderedHeight) / 2;
+            } else {
+                renderedWidth = containerRect.height * imgAspect;
+                renderedHeight = containerRect.height;
+                offsetX = (containerRect.width - renderedWidth) / 2;
+                offsetY = 0;
+            }
+
+            const udvarisPoint = document.getElementById('udvaris-point');
+            udvarisPoint.style.left = (offsetX + renderedWidth * systems.udvaris.x) + 'px';
+            udvarisPoint.style.top = (offsetY + renderedHeight * systems.udvaris.y) + 'px';
+
+            const enoxPoint = document.getElementById('enox-point');
+            enoxPoint.style.left = (offsetX + renderedWidth * systems.enox.x) + 'px';
+            enoxPoint.style.top = (offsetY + renderedHeight * systems.enox.y) + 'px';
+        }
         
         function updateTransform() {
             mapContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
         }
         
-        function updateDotTransform() {
-            // This function is now redundant since updateTransform handles both
-        }
         
         function zoomIn() {
             if (currentZoom < maxZoom) {
@@ -234,16 +276,30 @@
             popup.style.left = (event.pageX + 15) + 'px';
             popup.style.top = (event.pageY - 15) + 'px';
         }
+
+        // Enox info functions
+        function showEnoxInfo(event) {
+            event.stopPropagation();
+            const popup = document.getElementById('enox-info');
+            popup.style.display = 'block';
+            popup.style.left = (event.pageX + 15) + 'px';
+            popup.style.top = (event.pageY - 15) + 'px';
+        }
         
         // Close popup when clicking elsewhere
         container.addEventListener('click', (e) => {
             if (!e.target.classList.contains('system-point')) {
                 document.getElementById('udvaris-info').style.display = 'none';
+                document.getElementById('enox-info').style.display = 'none';
             }
         });
-        
+
+        mapImage.addEventListener('load', positionDots);
+        window.addEventListener('resize', positionDots);
+
         // Initialize
         updateTransform();
+        positionDots();
     </script>
 </body>
 </html>
