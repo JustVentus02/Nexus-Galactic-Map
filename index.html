@@ -162,14 +162,16 @@
         
         const minZoom = 0.5;
         const maxZoom = 5;
-        
+
+        function hideInfoPopups() {
+            document.getElementById('udvaris-info').style.display = 'none';
+        }
+
         function updateTransform() {
             mapContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+            hideInfoPopups();
         }
-        
-        function updateDotTransform() {
-            // This function is now redundant since updateTransform handles both
-        }
+
         
         function zoomIn() {
             if (currentZoom < maxZoom) {
