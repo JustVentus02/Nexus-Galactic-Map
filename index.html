@@ -167,10 +167,6 @@
             mapContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
         }
         
-        function updateDotTransform() {
-            // This function is now redundant since updateTransform handles both
-        }
-        
         function zoomIn() {
             if (currentZoom < maxZoom) {
                 currentZoom = Math.min(currentZoom * 1.5, maxZoom);
