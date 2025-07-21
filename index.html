@@ -172,9 +172,10 @@
         }
 
         function positionDots() {
-            const rect = mapImage.getBoundingClientRect();
-            udvarisDot.style.left = (udvarisPosition.x * rect.width) + 'px';
-            udvarisDot.style.top = (udvarisPosition.y * rect.height) + 'px';
+            const width = mapImage.offsetWidth;
+            const height = mapImage.offsetHeight;
+            udvarisDot.style.left = (udvarisPosition.x * width) + 'px';
+            udvarisDot.style.top = (udvarisPosition.y * height) + 'px';
         }
         
         function updateDotTransform() {
