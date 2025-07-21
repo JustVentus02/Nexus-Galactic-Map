@@ -131,7 +131,7 @@
             <img id="map-image" src="https://i.imgur.com/2kU1PB8.jpeg" alt="Galactic Map" draggable="false">
             
             <!-- Udvaris clickable point - now inside map container -->
-            <div class="system-point" style="left: 58.153%; top: 64.6%;" onclick="showUdvarisInfo(event)"></div>
+            <div id="udvaris-dot" class="system-point" onclick="showUdvarisInfo(event)"></div>
         </div>
         
         <!-- Udvaris info popup - stays outside so it doesn't transform -->
@@ -152,6 +152,10 @@
     <script>
         const container = document.getElementById('container');
         const mapContainer = document.getElementById('map-container');
+        const mapImage = document.getElementById('map-image');
+        const udvarisDot = document.getElementById('udvaris-dot');
+
+        const udvarisPosition = { x: 0.58153, y: 0.646 };
         
         let currentZoom = 1;
         let isDragging = false;
@@ -165,6 +169,24 @@
         
         function updateTransform() {
             mapContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+        }
+
+        function positionDots() {
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = mapContainer.clientHeight;
+            const naturalWidth = mapImage.naturalWidth;
+            const naturalHeight = mapImage.naturalHeight;
+
+            if (!naturalWidth || !naturalHeight) return;
+
+            const scale = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+            const displayWidth = naturalWidth * scale;
+            const displayHeight = naturalHeight * scale;
+            const offsetX = (containerWidth - displayWidth) / 2;
+            const offsetY = (containerHeight - displayHeight) / 2;
+
+            udvarisDot.style.left = offsetX + (udvarisPosition.x * displayWidth) + 'px';
+            udvarisDot.style.top = offsetY + (udvarisPosition.y * displayHeight) + 'px';
         }
         
         function updateDotTransform() {
@@ -241,9 +263,13 @@
                 document.getElementById('udvaris-info').style.display = 'none';
             }
         });
-        
+
+        mapImage.addEventListener('load', positionDots);
+        window.addEventListener('resize', positionDots);
+
         // Initialize
         updateTransform();
+        positionDots();
     </script>
 </body>
 </html>
