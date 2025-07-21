@@ -172,10 +172,21 @@
         }
 
         function positionDots() {
-            const width = mapImage.offsetWidth;
-            const height = mapImage.offsetHeight;
-            udvarisDot.style.left = (udvarisPosition.x * width) + 'px';
-            udvarisDot.style.top = (udvarisPosition.y * height) + 'px';
+            const containerWidth = mapContainer.clientWidth;
+            const containerHeight = mapContainer.clientHeight;
+            const naturalWidth = mapImage.naturalWidth;
+            const naturalHeight = mapImage.naturalHeight;
+
+            if (!naturalWidth || !naturalHeight) return;
+
+            const scale = Math.min(containerWidth / naturalWidth, containerHeight / naturalHeight);
+            const displayWidth = naturalWidth * scale;
+            const displayHeight = naturalHeight * scale;
+            const offsetX = (containerWidth - displayWidth) / 2;
+            const offsetY = (containerHeight - displayHeight) / 2;
+
+            udvarisDot.style.left = offsetX + (udvarisPosition.x * displayWidth) + 'px';
+            udvarisDot.style.top = offsetY + (udvarisPosition.y * displayHeight) + 'px';
         }
         
         function updateDotTransform() {
