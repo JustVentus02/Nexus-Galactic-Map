@@ -163,12 +163,9 @@
         const minZoom = 0.5;
         const maxZoom = 5;
         
+        // updateTransform now manages both translation and scaling
         function updateTransform() {
             mapContainer.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
-        }
-        
-        function updateDotTransform() {
-            // This function is now redundant since updateTransform handles both
         }
         
         function zoomIn() {
